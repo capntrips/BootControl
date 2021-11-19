@@ -1,0 +1,68 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
+
+android {
+    compileSdk 31
+
+    defaultConfig {
+        applicationId "com.github.capntrips.devinfopatcher"
+        minSdk 31
+        targetSdk 31
+        versionCode 1
+        versionName "1.0.0-alpha01"
+
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+        useIR = true
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion compose_version
+        kotlinCompilerVersion '1.5.21'
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+dependencies {
+    implementation "androidx.activity:activity-compose:$activity_version"
+    implementation "androidx.activity:activity-ktx:$activity_version"
+    implementation "androidx.appcompat:appcompat:$appcompat_version"
+    implementation "androidx.compose.material3:material3:$material3_version"
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+    implementation "androidx.compose.material:material:$compose_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
+    implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.core:core-ktx:$core_version"
+    implementation "androidx.core:core-splashscreen:$splashscreen_version"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
+    implementation "com.github.topjohnwu.libsu:core:$libsuVersion"
+    implementation "com.github.topjohnwu.libsu:io:$libsuVersion"
+    implementation "com.google.accompanist:accompanist-insets-ui:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-swiperefresh:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
+    implementation "com.google.android.material:material:$material_version"
+    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Devinfo Patcher</string>
+    <string name="root_required">Root is required</string>
+    <string name="device">Device</string>
+    <string name="model">Model</string>
+    <string name="build_number">Build Number</string>
+    <string name="slot_suffix">Slot Suffix</string>
+    <string name="slot_a">Slot A</string>
+    <string name="slot_b">Slot B</string>
+    <string name="retry_count">Retry Count</string>
+    <string name="unbootable">Unbootable</string>
+    <string name="successful">Successful</string>
+    <string name="active">Active</string>
+    <string name="fastboot_ok" tools:ignore="Typos">Fastboot Ok</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="patch">Patch</string>
+</resources>
