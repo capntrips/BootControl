@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">Devinfo Patcher</string>
+    <string name="app_name">Boot Control</string>
     <string name="root_required">Root is required</string>
     <string name="device">Device</string>
     <string name="model">Model</string>
@@ -16,4 +16,5 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="patch">Patch</string>
+    <string name="activate">Activate</string>
 </resources>

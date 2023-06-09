@@ -1,4 +1,4 @@
-package com.github.capntrips.devinfopatcher
+package com.github.capntrips.bootcontrol
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -12,9 +12,9 @@ import kotlinx.coroutines.launch
 class SlotStatePreview constructor(private val _isRefreshing : MutableStateFlow<Boolean>, isActive: Boolean) : ViewModel(), SlotStateInterface {
     override var retryCount: Int = if (isActive) 2 else 3
     override var unbootable: Boolean = false
-    override var successful: Boolean = isActive
+    override var successful: Boolean = true
     override var active: Boolean = isActive
-    override var fastbootOk: Boolean = isActive
+    override var fastbootOk: Boolean = false
 
     override val isRefreshing: StateFlow<Boolean>
         get() = _isRefreshing.asStateFlow()
@@ -38,5 +38,9 @@ class SlotStatePreview constructor(private val _isRefreshing : MutableStateFlow<
             delay(500)
             successful = true
         }
+    }
+
+    override fun setActive(context: Context, active: Boolean) {
+        this.active = active
     }
 }

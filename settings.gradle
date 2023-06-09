@@ -6,5 +6,5 @@ dependencyResolutionManagement {
         maven { url 'https://jitpack.io' }
     }
 }
-rootProject.name = "Devinfo Patcher"
+rootProject.name = "Boot Control"
 include ':app'

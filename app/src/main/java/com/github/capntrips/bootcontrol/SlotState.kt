@@ -1,4 +1,4 @@
-package com.github.capntrips.devinfopatcher
+package com.github.capntrips.bootcontrol
 
 import android.content.Context
 import android.util.Base64
@@ -21,7 +21,7 @@ import java.nio.ByteOrder
 
 class SlotState(context: Context, private val devinfo: File, private val offset: Int, private val _isRefreshing : MutableStateFlow<Boolean>) : ViewModel(), SlotStateInterface {
     companion object {
-        const val TAG: String = "VbmetaPatcher/SlotState"
+        const val TAG: String = "BootControl/SlotState"
         const val MAGIC: String = "49564544"
     }
 
@@ -93,6 +93,28 @@ class SlotState(context: Context, private val devinfo: File, private val offset:
         //     flags = flags or DevinfoImageFlags.Unbootable.position
         // }
         flags = flags or DevinfoImageFlags.Successful.position
+        if (active) {
+            flags = flags or DevinfoImageFlags.Active.position
+        }
+        if (fastbootOk) {
+            flags = flags or DevinfoImageFlags.FastbootOk.position
+        }
+        Shell.su("printf '\\x${"%02x".format(flags)}' | dd of=$devinfo bs=1 seek=${offset + 1} count=1 conv=notrunc status=none").exec()
+        refresh(context)
+    }
+
+    override fun setActive(context: Context, active: Boolean) {
+        if (!hasMagic()) {
+            log(context, "Unexpected Format", shouldThrow = true)
+        }
+
+        var flags: Byte = 0x00.toByte()
+        if (unbootable) {
+            flags = flags or DevinfoImageFlags.Unbootable.position
+        }
+        if (successful) {
+            flags = flags or DevinfoImageFlags.Successful.position
+        }
         if (active) {
             flags = flags or DevinfoImageFlags.Active.position
         }

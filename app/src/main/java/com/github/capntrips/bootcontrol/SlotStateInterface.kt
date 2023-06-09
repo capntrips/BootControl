@@ -1,4 +1,4 @@
-package com.github.capntrips.devinfopatcher
+package com.github.capntrips.bootcontrol
 
 import android.content.Context
 import kotlinx.coroutines.flow.StateFlow
@@ -12,4 +12,5 @@ interface SlotStateInterface {
     val isRefreshing: StateFlow<Boolean>
     fun refresh(context: Context)
     fun patch(context: Context)
+    fun setActive(context: Context, active: Boolean)
 }

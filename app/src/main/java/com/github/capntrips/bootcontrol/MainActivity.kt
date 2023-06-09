@@ -1,4 +1,4 @@
-package com.github.capntrips.devinfopatcher
+package com.github.capntrips.bootcontrol
 
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.core.animation.doOnEnd
 import androidx.core.view.WindowCompat
-import com.github.capntrips.devinfopatcher.ui.theme.DevinfoPatcherTheme
+import com.github.capntrips.bootcontrol.ui.theme.BootControlTheme
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.topjohnwu.superuser.Shell
@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            DevinfoPatcherTheme {
+            BootControlTheme {
                 val systemUiController = rememberSystemUiController()
                 val darkIcons = MaterialTheme.colorScheme.background.luminance() > 0.5f
                 SideEffect {

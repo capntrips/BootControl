@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.github.capntrips.devinfopatcher">
+    package="com.github.capntrips.bootcontrol">
 
     <application
         android:allowBackup="false"
@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Material3.DayNight.NoActionBar">
         <activity
-            android:name="com.github.capntrips.devinfopatcher.MainActivity"
+            android:name="com.github.capntrips.bootcontrol.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MainSplashScreen">
             <intent-filter>

@@ -1,6 +1,8 @@
-package com.github.capntrips.devinfopatcher
+package com.github.capntrips.bootcontrol
 
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -10,6 +12,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class MainViewModel constructor(context: Context) : ViewModel(), MainViewModelInterface {
+    companion object {
+        const val TAG: String = "BootControl/MainViewModel"
+    }
     private val _isRefreshing: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private lateinit var _uiState: MutableStateFlow<DeviceStateInterface>
     private var _error: String? = null
@@ -46,6 +51,26 @@ class MainViewModel constructor(context: Context) : ViewModel(), MainViewModelIn
             } catch (e: Exception) {
                 _error = e.message
             }
+        }
+    }
+
+    private fun log(context: Context, message: String, shouldThrow: Boolean = false) {
+        viewModelScope.launch(Dispatchers.Main) {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+        Log.d(TAG, message)
+        if (shouldThrow) {
+            throw Exception(message)
+        }
+    }
+
+    override fun activate(context: Context, slot: SlotStateInterface) {
+        launch {
+            val slotA = uiState.value.slotA.value
+            val slotB = uiState.value.slotB.value
+            slotA.setActive(context, slotA == slot)
+            slotB.setActive(context, slotB == slot)
+            log(context, "slot activated")
         }
     }
 }

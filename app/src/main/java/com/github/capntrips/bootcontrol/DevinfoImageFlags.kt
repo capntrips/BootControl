@@ -1,4 +1,4 @@
-package com.github.capntrips.devinfopatcher
+package com.github.capntrips.bootcontrol
 
 enum class DevinfoImageFlags(val position: Byte) {
     Unbootable(1),

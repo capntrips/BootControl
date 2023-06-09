@@ -1,4 +1,4 @@
-package com.github.capntrips.devinfopatcher.ui.theme
+package com.github.capntrips.bootcontrol.ui.theme
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -13,7 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 
 @SuppressLint("ObsoleteSdkInt")
 @Composable
-fun DevinfoPatcherTheme(
+fun BootControlTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     isDynamicColor: Boolean = true,
     content: @Composable () -> Unit

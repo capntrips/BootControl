@@ -1,4 +1,4 @@
-package com.github.capntrips.devinfopatcher
+package com.github.capntrips.bootcontrol
 
 import android.content.res.Configuration
 import android.os.Build
@@ -34,7 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.github.capntrips.devinfopatcher.ui.theme.DevinfoPatcherTheme
+import com.github.capntrips.bootcontrol.ui.theme.BootControlTheme
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
@@ -58,12 +58,14 @@ fun MainContent(viewModel: MainViewModelInterface) {
         Spacer(Modifier.height(16.dp))
         SlotCard(
             title = stringResource(R.string.slot_a),
+            viewModel=viewModel,
             slotStateFlow = uiState.slotA,
             isActive = uiState.slotSuffix == "_a"
         )
         Spacer(Modifier.height(16.dp))
         SlotCard(
             title = stringResource(R.string.slot_b),
+            viewModel=viewModel,
             slotStateFlow = uiState.slotB,
             isActive = uiState.slotSuffix == "_b"
         )
@@ -73,6 +75,7 @@ fun MainContent(viewModel: MainViewModelInterface) {
 @Composable
 fun SlotCard(
     title: String,
+    viewModel: MainViewModelInterface,
     slotStateFlow: StateFlow<SlotStateInterface>,
     isActive: Boolean
 ) {
@@ -83,9 +86,11 @@ fun SlotCard(
         title = title,
         button = {
             if (!isRefreshing) {
-                if (!isActive) {
+                if (!slot.active) {
                     if (!slot.successful) {
                         PatchButton(slot)
+                    } else {
+                        ActivateButton(viewModel, slot)
                     }
                 }
             }
@@ -127,6 +132,18 @@ fun PatchButton(slot: SlotStateInterface) {
         onClick = { slot.patch(context) }
     ) {
         Text(stringResource(R.string.patch))
+    }
+}
+
+@Composable
+fun ActivateButton(viewModel: MainViewModelInterface, slot: SlotStateInterface) {
+    val context = LocalContext.current
+    Button(
+        modifier = Modifier.padding(0.dp),
+        shape = RoundedCornerShape(4.0.dp),
+        onClick = { viewModel.activate(context, slot) }
+    ) {
+        Text(stringResource(R.string.activate))
     }
 }
 
@@ -239,7 +256,7 @@ fun MainContentPreviewDark() {
 @Preview(showBackground = true)
 @Composable
 fun MainContentPreviewLight() {
-    DevinfoPatcherTheme {
+    BootControlTheme {
         Scaffold {
             val viewModel: MainViewModelPreview = viewModel()
             MainContent(viewModel)

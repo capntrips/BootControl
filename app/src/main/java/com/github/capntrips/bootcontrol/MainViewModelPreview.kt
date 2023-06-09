@@ -1,4 +1,4 @@
-package com.github.capntrips.devinfopatcher
+package com.github.capntrips.bootcontrol
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -30,6 +30,16 @@ class MainViewModelPreview : ViewModel(), MainViewModelInterface {
         launch {
             delay(500)
             uiState.value.refresh(context)
+        }
+    }
+
+    override fun activate(context: Context, slot: SlotStateInterface) {
+        launch {
+            delay(500)
+            val slotA = uiState.value.slotA.value
+            val slotB = uiState.value.slotB.value
+            slotA.setActive(context, slotA == slot)
+            slotB.setActive(context, slotB == slot)
         }
     }
 }

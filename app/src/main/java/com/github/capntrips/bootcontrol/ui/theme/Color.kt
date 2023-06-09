@@ -1,4 +1,4 @@
-package com.github.capntrips.devinfopatcher.ui.theme
+package com.github.capntrips.bootcontrol.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
