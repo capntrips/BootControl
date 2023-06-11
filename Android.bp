@@ -1,0 +1,33 @@
+android_app {
+    name: "BootControl",
+    srcs: [
+        "app/src/main/java/**/*.kt",
+        // TODO: fix setActiveBootSlot
+        "app/src/main/java/**/*.java",
+        "app/src/main/aidl/**/*.aidl",
+    ],
+    resource_dirs: ["app/src/main/res"],
+    manifest: "app/src/main/AndroidManifest.xml",
+    static_libs: [
+        "androidx.activity_activity-compose",
+        "androidx.activity_activity-ktx",
+        "androidx.appcompat_appcompat",
+        "androidx.compose.foundation_foundation-layout",
+        "androidx.compose.material3_material3",
+        "androidx.compose.material_material-icons-extended",
+        "androidx.compose.material_material",
+        "androidx.compose.runtime_runtime",
+        "androidx.compose.ui_ui",
+        "androidx.core_core-ktx",
+        "androidx.core_core-splashscreen",
+        "androidx.lifecycle_lifecycle-runtime-ktx",
+        "androidx.lifecycle_lifecycle-viewmodel-compose",
+        "androidx.navigation_navigation-compose",
+        "com.google.android.material_material",
+        "hwbinder.stubs",
+        "com.github.topjohnwu.libsu_service",
+        "com.github.topjohnwu.libsu_core",
+    ],
+    // TODO: build for api 29
+    platform_apis: true,
+}

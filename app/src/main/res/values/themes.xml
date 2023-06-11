@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="Theme.BootControl" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:statusBarColor" >@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
     <style name="Theme.MainSplashScreen" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/ic_splash_background</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_animation</item>
         <item name="windowSplashScreenAnimationDuration">1000</item>
-        <item name="postSplashScreenTheme">@style/Theme.Material3.DayNight.NoActionBar</item>
+        <item name="postSplashScreenTheme">@style/Theme.BootControl</item>
     </style>
 </resources>

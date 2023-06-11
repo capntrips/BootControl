@@ -1,7 +1,9 @@
 package com.github.capntrips.bootcontrol
 
-import android.content.res.Configuration
 import android.os.Build
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,9 +17,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,118 +31,133 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.github.capntrips.bootcontrol.ui.theme.BootControlTheme
+import androidx.navigation.NavController
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-fun MainContent(viewModel: MainViewModelInterface) {
+fun ColumnScope.MainContent(
+    viewModel: MainViewModel,
+    navController: NavController,
+) {
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
-    Column {
-        DataCard (title = stringResource(R.string.device)) {
-            DataRow(
-                label = stringResource(R.string.model),
-                value = "${Build.MODEL} (${Build.DEVICE})"
-            )
-            DataRow(
-                label = stringResource(R.string.build_number),
-                value = Build.ID
-            )
-            DataRow(
-                label = stringResource(R.string.slot_suffix),
-                value = uiState.slotSuffix
-            )
+    DataCard (title = stringResource(R.string.device)) {
+        DataRow(
+            label = stringResource(R.string.model),
+            value = "${Build.MODEL} (${Build.DEVICE})"
+        )
+        DataRow(
+            label = stringResource(R.string.build_number),
+            value = Build.ID
+        )
+        DataRow(
+            label = stringResource(R.string.hal_version),
+            value = uiState.halVersion.toString()
+        )
+        DataRow(
+            label = stringResource(R.string.slot_suffix),
+            value = uiState.slotSuffix
+        )
+    }
+    Spacer(Modifier.height(16.dp))
+    SlotCard(
+        title = stringResource(R.string.slot_a),
+        viewModel=viewModel,
+        navController=navController,
+        slotStateFlow = uiState.slotA,
+        isActive = uiState.slotSuffix == "_a",
+        initialized = uiState.initialized,
+        halVersion = uiState.halVersion,
+    )
+    Spacer(Modifier.height(16.dp))
+    SlotCard(
+        title = stringResource(R.string.slot_b),
+        viewModel=viewModel,
+        navController=navController,
+        slotStateFlow = uiState.slotB,
+        isActive = uiState.slotSuffix == "_b",
+        initialized = uiState.initialized,
+        halVersion = uiState.halVersion,
+    )
+    Spacer(Modifier.height(16.dp))
+    AnimatedVisibility(
+        !isRefreshing,
+        enter = fadeIn(),
+        exit = fadeOut(),
+    ) {
+        OutlinedButton(
+            modifier = Modifier
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(4.dp),
+            onClick = { navController.navigate("reboot") }
+        ) {
+            Text(stringResource(R.string.reboot))
         }
-        Spacer(Modifier.height(16.dp))
-        SlotCard(
-            title = stringResource(R.string.slot_a),
-            viewModel=viewModel,
-            slotStateFlow = uiState.slotA,
-            isActive = uiState.slotSuffix == "_a"
-        )
-        Spacer(Modifier.height(16.dp))
-        SlotCard(
-            title = stringResource(R.string.slot_b),
-            viewModel=viewModel,
-            slotStateFlow = uiState.slotB,
-            isActive = uiState.slotSuffix == "_b"
-        )
     }
 }
 
 @Composable
 fun SlotCard(
     title: String,
-    viewModel: MainViewModelInterface,
-    slotStateFlow: StateFlow<SlotStateInterface>,
-    isActive: Boolean
+    viewModel: MainViewModel,
+    navController: NavController,
+    slotStateFlow: StateFlow<SlotState>,
+    isActive: Boolean,
+    initialized: Boolean,
+    halVersion: Float,
 ) {
     // TODO: hoist state?
     val slot by slotStateFlow.collectAsState()
-    val isRefreshing by slot.isRefreshing.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
     DataCard (
         title = title,
         button = {
-            if (!isRefreshing) {
-                if (!slot.active) {
-                    if (!slot.successful) {
-                        PatchButton(slot)
-                    } else {
-                        ActivateButton(viewModel, slot)
-                    }
-                }
+            AnimatedVisibility(
+                initialized && !isRefreshing && if (halVersion >= 1.2f) !slot.active else !isActive,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                ActivateButton(viewModel, slot, navController)
             }
         }
     ) {
-        HasStatusDataRow(
-            label = stringResource(R.string.retry_count),
-            value = slot.retryCount.toString(),
-            hasStatus = slot.retryCount > 0
-        )
-        HasStatusDataRow(
-            label = stringResource(R.string.unbootable),
-            value = stringResource(if (slot.unbootable) R.string.yes else R.string.no),
-            hasStatus = !slot.unbootable
-        )
-        HasStatusDataRow(
-            label = stringResource(R.string.successful),
-            value = stringResource(if (slot.successful) R.string.yes else R.string.no),
-            hasStatus = slot.successful
-        )
-        HasStatusDataRow(
-            label = stringResource(R.string.active),
-            value = stringResource(if (slot.active) R.string.yes else R.string.no),
-            hasStatus = if (isActive) slot.active else !slot.active
-        )
-        DataRow(
-            label = stringResource(R.string.fastboot_ok),
-            value = stringResource(if (slot.fastbootOk) R.string.yes else R.string.no)
-        )
+        AnimatedVisibility(initialized) {
+            Column {
+                HasStatusDataRow(
+                    label = stringResource(R.string.unbootable),
+                    value = stringResource(if (slot.unbootable) R.string.yes else R.string.no),
+                    hasStatus = !slot.unbootable
+                )
+                HasStatusDataRow(
+                    label = stringResource(R.string.successful),
+                    value = stringResource(if (slot.successful) R.string.yes else R.string.no),
+                    hasStatus = slot.successful
+                )
+                if (halVersion >= 1.2f) {
+                    HasStatusDataRow(
+                        label = stringResource(R.string.active),
+                        value = stringResource(if (slot.active) R.string.yes else R.string.no),
+                        hasStatus = if (isActive) slot.active else !slot.active
+                    )
+                }
+            }
+        }
     }
 }
 
 @Composable
-fun PatchButton(slot: SlotStateInterface) {
+fun ActivateButton(
+    viewModel: MainViewModel,
+    slot: SlotState,
+    navController: NavController,
+) {
     val context = LocalContext.current
     Button(
         modifier = Modifier.padding(0.dp),
         shape = RoundedCornerShape(4.0.dp),
-        onClick = { slot.patch(context) }
-    ) {
-        Text(stringResource(R.string.patch))
-    }
-}
-
-@Composable
-fun ActivateButton(viewModel: MainViewModelInterface, slot: SlotStateInterface) {
-    val context = LocalContext.current
-    Button(
-        modifier = Modifier.padding(0.dp),
-        shape = RoundedCornerShape(4.0.dp),
-        onClick = { viewModel.activate(context, slot) }
+        onClick = { viewModel.activate(context, slot) { navController.navigate("reboot") } }
     ) {
         Text(stringResource(R.string.activate))
     }
@@ -240,26 +256,4 @@ fun HasStatusDataRow(
         value = value,
         valueColor = if (hasStatus) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
     )
-}
-
-@ExperimentalMaterial3Api
-@Preview(
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Composable
-fun MainContentPreviewDark() {
-    MainContentPreviewLight()
-}
-
-@ExperimentalMaterial3Api
-@Preview(showBackground = true)
-@Composable
-fun MainContentPreviewLight() {
-    BootControlTheme {
-        Scaffold {
-            val viewModel: MainViewModelPreview = viewModel()
-            MainContent(viewModel)
-        }
-    }
 }
