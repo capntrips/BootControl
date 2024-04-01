@@ -24,10 +24,12 @@ import com.github.capntrips.bootcontrol.ui.theme.Orange500
 @ExperimentalMaterial3Api
 @Composable
 fun ErrorScreen(message: String) {
-    Scaffold {
+    Scaffold { contentPadding ->
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .padding(contentPadding)
+                .fillMaxSize()
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(

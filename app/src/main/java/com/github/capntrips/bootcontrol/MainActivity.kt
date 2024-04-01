@@ -35,6 +35,7 @@ import com.topjohnwu.superuser.ipc.RootService
 class MainActivity : ComponentActivity() {
     private var viewModel: MainViewModel? = null
     private lateinit var mainListener: MainListener
+    private var bootctlFailure = false;
 
     inner class BootControlConnection : ServiceConnection {
         @ExperimentalMaterial3Api
@@ -82,7 +83,7 @@ class MainActivity : ComponentActivity() {
         content.viewTreeObserver.addOnPreDrawListener(
             object : ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {
-                    return if (viewModel?.isRefreshing?.value == false || Shell.isAppGrantedRoot() == false) {
+                    return if (viewModel?.isRefreshing?.value == false || bootctlFailure || Shell.isAppGrantedRoot() == false) {
                         content.viewTreeObserver.removeOnPreDrawListener(this)
                         true
                     } else {
@@ -108,34 +109,39 @@ class MainActivity : ComponentActivity() {
     @ExperimentalMaterial3Api
     fun onBootControlServiceConnected(bootctl: IBootControlService) {
         setContent {
-            val navController = rememberNavController()
-            viewModel = MainViewModel(this, bootctl, navController)
             BootControlTheme {
-                if (!viewModel!!.hasError) {
-                    mainListener = MainListener {
-                        viewModel!!.refresh()
-                    }
-                    val rebootViewModel = viewModel!!.reboot
-                    val isRefreshing by viewModel!!.isRefreshing.collectAsState()
-                    BackHandler(enabled = isRefreshing, onBack = {})
-                    NavHost(navController = navController, startDestination = "main") {
-                        composable("main") {
-                            RefreshableScreen(viewModel!!, navController, swipeEnabled = true) {
-                                MainContent(viewModel!!, navController)
+                if (bootctl.halInfo() != null) {
+                    val navController = rememberNavController()
+                    viewModel = MainViewModel(this, bootctl, navController)
+                    if (!viewModel!!.hasError) {
+                        mainListener = MainListener {
+                            viewModel!!.refresh()
+                        }
+                        val rebootViewModel = viewModel!!.reboot
+                        val isRefreshing by viewModel!!.isRefreshing.collectAsState()
+                        BackHandler(enabled = isRefreshing, onBack = {})
+                        NavHost(navController = navController, startDestination = "main") {
+                            composable("main") {
+                                RefreshableScreen(viewModel!!, navController, swipeEnabled = true) {
+                                    MainContent(viewModel!!, navController)
+                                }
+                            }
+                            composable("reboot") {
+                                RefreshableScreen(viewModel!!, navController) {
+                                    RebootContent(rebootViewModel)
+                                }
+                            }
+                            composable("error/{error}") { backStackEntry ->
+                                val error = backStackEntry.arguments?.getString("error")
+                                ErrorScreen(error!!)
                             }
                         }
-                        composable("reboot") {
-                            RefreshableScreen(viewModel!!, navController) {
-                                RebootContent(rebootViewModel)
-                            }
-                        }
-                        composable("error/{error}") { backStackEntry ->
-                            val error = backStackEntry.arguments?.getString("error")
-                            ErrorScreen(error!!)
-                        }
+                    } else {
+                        ErrorScreen(viewModel!!.error)
                     }
                 } else {
-                    ErrorScreen(viewModel!!.error)
+                    bootctlFailure = true
+                    ErrorScreen(stringResource(R.string.bootctl_failed))
                 }
             }
         }

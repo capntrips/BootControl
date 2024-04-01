@@ -6,6 +6,7 @@ android_app {
         "app/src/main/java/**/*.java",
         "app/src/main/aidl/**/*.aidl",
     ],
+    jni_libs: ["libbootcontrol"],
     resource_dirs: ["app/src/main/res"],
     manifest: "app/src/main/AndroidManifest.xml",
     static_libs: [
@@ -24,10 +25,38 @@ android_app {
         "androidx.lifecycle_lifecycle-viewmodel-compose",
         "androidx.navigation_navigation-compose",
         "com.google.android.material_material",
-        "hwbinder.stubs",
         "com.github.topjohnwu.libsu_service",
         "com.github.topjohnwu.libsu_core",
     ],
+    aidl: {
+        local_include_dirs: ["app/src/main/aidl"],
+    },
     // TODO: build for api 29
     platform_apis: true,
+    use_embedded_native_libs: true,
+}
+
+cc_library_shared {
+    name: "libbootcontrol",
+    srcs: ["app/src/main/cpp/libbootcontrol.cpp"],
+    static_libs: [
+        "android.hardware.boot-V1-ndk",
+        "android.hardware.boot@1.0",
+        "android.hardware.boot@1.1",
+        "android.hardware.boot@1.2",
+        "libboot_control_client",
+    ],
+    shared_libs: [
+        "libhidlbase",
+        "libbinder_ndk",
+        "libbase",
+        "libcutils",
+        "libutils",
+        "liblog",
+    ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+    ],
+    header_libs: ["jni_headers"],
 }

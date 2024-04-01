@@ -1,13 +1,16 @@
 package com.github.capntrips.bootcontrol;
 
+import com.github.capntrips.bootcontrol.BoolResult;
+import com.github.capntrips.bootcontrol.CommandResult;
+
 interface IBootControlService {
     String halInfo();
-    float halVersion();
+    int halVersion();
     int getNumberSlots();
     int getCurrentSlot();
-    boolean setActiveBootSlot(int slot);
-    boolean isSlotBootable(int slot);
-    boolean isSlotMarkedSuccessful(int slot);
+    CommandResult setActiveBootSlot(int slot);
+    BoolResult isSlotBootable(int slot);
+    BoolResult isSlotMarkedSuccessful(int slot);
     String getSuffix(int slot);
     int getActiveBootSlot();
 }

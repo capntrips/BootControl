@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 
-class DeviceState constructor(
+class DeviceState(
     context: Context,
     private val bootctl: IBootControlService,
     private val _isRefreshing : MutableStateFlow<Boolean>
@@ -23,7 +23,8 @@ class DeviceState constructor(
 
     private var _slotA: MutableStateFlow<SlotState>
     private var _slotB: MutableStateFlow<SlotState>
-    val halVersion: Float
+    val halInfo: String
+    val halVersion: BootControlVersion
     val slotSuffix: String
     var initialized: Boolean = false
         private set
@@ -38,7 +39,7 @@ class DeviceState constructor(
         slotA.value.successful = isSlotMarkedSuccessful(0)
         slotB.value.unbootable = !isSlotBootable(1)
         slotB.value.successful = isSlotMarkedSuccessful(1)
-        if (halVersion >= 1.2f) {
+        if (halVersion >= BootControlVersion.BOOTCTL_V1_2) {
             val activeSlot = getActiveBootSlot()
             slotA.value.active = activeSlot == 0
             slotB.value.active = activeSlot == 1
@@ -54,11 +55,8 @@ class DeviceState constructor(
     init {
         _slotA = MutableStateFlow(SlotState())
         _slotB = MutableStateFlow(SlotState())
-        halInfo()
+        halInfo = halInfo()
         halVersion = halVersion()
-        if (halVersion.isNaN()) {
-            log(context, "Error getting BootControl v1.0 module.", shouldThrow = true)
-        }
         slotSuffix = getSuffix(getCurrentSlot())
         _refresh()
         initialized = true
@@ -82,12 +80,12 @@ class DeviceState constructor(
         }
     }
 
-    private fun halInfo() {
-        Log.i(TAG, bootctl.halInfo())
+    private fun halInfo(): String {
+        return bootctl.halInfo()
     }
 
-    private fun halVersion(): Float {
-        return bootctl.halVersion()
+    private fun halVersion(): BootControlVersion {
+        return BootControlVersion.entries[bootctl.halVersion()]
     }
 
     private fun getCurrentSlot(): Int {
@@ -95,15 +93,15 @@ class DeviceState constructor(
     }
 
     fun setActiveBootSlot(slot: Int): Boolean {
-        return bootctl.setActiveBootSlot(slot)
+        return bootctl.setActiveBootSlot(slot).success
     }
 
     private fun isSlotBootable(slot: Int): Boolean {
-        return bootctl.isSlotBootable(slot)
+        return bootctl.isSlotBootable(slot).value
     }
 
     private fun isSlotMarkedSuccessful(slot: Int): Boolean {
-        return bootctl.isSlotMarkedSuccessful(slot)
+        return bootctl.isSlotMarkedSuccessful(slot).value
     }
 
     private fun getSuffix(slot: Int): String {
