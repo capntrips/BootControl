@@ -54,7 +54,7 @@ fun ColumnScope.MainContent(
         )
         DataRow(
             label = stringResource(R.string.hal_version),
-            value = uiState.halVersion.toString()
+            value = uiState.halInfo
         )
         DataRow(
             label = stringResource(R.string.slot_suffix),
@@ -106,7 +106,7 @@ fun SlotCard(
     slotStateFlow: StateFlow<SlotState>,
     isActive: Boolean,
     initialized: Boolean,
-    halVersion: Float,
+    halVersion: BootControlVersion,
 ) {
     // TODO: hoist state?
     val slot by slotStateFlow.collectAsState()
@@ -115,7 +115,7 @@ fun SlotCard(
         title = title,
         button = {
             AnimatedVisibility(
-                initialized && !isRefreshing && if (halVersion >= 1.2f) !slot.active else !isActive,
+                initialized && !isRefreshing && if (halVersion >= BootControlVersion.BOOTCTL_V1_2) !slot.active else !isActive,
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
@@ -135,7 +135,7 @@ fun SlotCard(
                     value = stringResource(if (slot.successful) R.string.yes else R.string.no),
                     hasStatus = slot.successful
                 )
-                if (halVersion >= 1.2f) {
+                if (halVersion >= BootControlVersion.BOOTCTL_V1_2) {
                     HasStatusDataRow(
                         label = stringResource(R.string.active),
                         value = stringResource(if (slot.active) R.string.yes else R.string.no),

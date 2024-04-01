@@ -1,28 +1,14 @@
 buildscript {
-    ext {
-        activity_version = '1.5.0-alpha03'
-        // accompanist_version = '0.18.0'
-        appcompat_version = '1.6.0'
-        compose_version = '1.4.0'
-        core_version = '1.9.0-alpha03'
-        foundation_version = '1.4.0-alpha03'
-         libsuVersion = '5.1.0'
-        lifecycle_version = "2.5.0-alpha03"
-        material_version = '1.7.0-alpha03'
-        material3_version = '1.1.0-alpha03'
-        nav_version = '2.5.0-alpha03'
-        splashscreen_version = '1.0.1'
-    }
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0"
+        classpath libs.gradle
+        classpath libs.kotlin.gradle.plugin
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+tasks.register('clean', Delete) {
+    delete rootProject.layout.buildDirectory
 }

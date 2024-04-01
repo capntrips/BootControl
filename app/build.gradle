@@ -4,14 +4,15 @@ plugins {
 }
 
 android {
-    compileSdk 33
+    namespace 'com.github.capntrips.bootcontrol'
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.github.capntrips.bootcontrol"
         minSdk 29
-        targetSdk 33
-        versionCode 2
-        versionName "1.0.0-alpha02"
+        targetSdk 34
+        versionCode 3
+        versionName "1.0.0-alpha03"
 
         vectorDrawables {
             useSupportLibrary true
@@ -20,24 +21,29 @@ android {
 
     buildTypes {
         release {
-            // TODO: fix minify
-            minifyEnabled false
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = "17"
     }
+    // externalNativeBuild {
+    //     cmake {
+    //         path file('src/main/cpp/CMakeLists.txt')
+    //         version '3.22.1'
+    //     }
+    // }
     buildFeatures {
         compose true
         aidl true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion compose_version
-        kotlinCompilerVersion '1.5.21'
+        kotlinCompilerExtensionVersion libs.versions.compose.compiler.get()
     }
     packagingOptions {
         resources {
@@ -47,21 +53,20 @@ android {
 }
 
 dependencies {
-    implementation "androidx.activity:activity-compose:$activity_version"
-    implementation "androidx.activity:activity-ktx:$activity_version"
-    implementation "androidx.appcompat:appcompat:$appcompat_version"
-    implementation "androidx.compose.foundation:foundation-layout:$foundation_version"
-    implementation "androidx.compose.material3:material3:$material3_version"
-    implementation "androidx.compose.material:material-icons-extended:$compose_version"
-    implementation "androidx.compose.material:material:$compose_version"
-    implementation "androidx.compose.ui:ui:$compose_version"
-    implementation "androidx.core:core-ktx:$core_version"
-    implementation "androidx.core:core-splashscreen:$splashscreen_version"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
-    implementation "androidx.navigation:navigation-compose:$nav_version"
-    implementation "com.github.topjohnwu.libsu:core:$libsuVersion"
-    implementation "com.github.topjohnwu.libsu:service:$libsuVersion"
-    implementation "com.google.android.material:material:$material_version"
-    implementation files('libs/hwbinder.stubs.jar')
+    implementation libs.androidx.activity.compose
+    implementation libs.androidx.activity.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.compose.foundation.layout
+    implementation libs.androidx.compose.material3
+    implementation libs.androidx.compose.material.icons.extended
+    implementation libs.androidx.compose.material
+    implementation libs.androidx.compose.ui
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.core.splashscreen
+    implementation libs.androidx.lifecycle.runtime.ktx
+    implementation libs.androidx.lifecycle.viewmodel.compose
+    implementation libs.androidx.navigation.compose
+    implementation libs.libsu.core
+    implementation libs.libsu.service
+    implementation libs.material
 }

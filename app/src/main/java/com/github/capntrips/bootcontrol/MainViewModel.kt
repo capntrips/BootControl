@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainViewModel constructor(
+class MainViewModel(
     context: Context,
     bootctl: IBootControlService,
     navController: NavHostController,
